@@ -1,0 +1,104 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Thiago Macieira <thiago.macieira@intel.com>
+Date: Mon, 10 Sep 2018 21:01:00 -0700
+Subject: [PATCH] Open library file descriptors with O_CLOEXEC
+
+This patch is non-portable, it needs linux 2.6.23 and glibc 2.7
+or later, different combinations (old linux, new glibc and vice-versa)
+will result in a crash.
+
+To make it portable you have to test O_CLOEXEC support at *runtime*
+compile time is not enough.
+
+Signed-off-by: Patrick McCarty <patrick.mccarty@intel.com>
+---
+ configure.ac  | 2 ++
+ lib/connect.c | 2 +-
+ lib/file.c    | 4 ++--
+ lib/hostip.c  | 4 ++--
+ lib/if2ip.c   | 2 +-
+ 5 files changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index d8dcec8..4db5db2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -299,6 +299,8 @@ AC_DEFINE_UNQUOTED(OS, "${host}", [cpu-machine-OS])
+ # Silence warning: ar: 'u' modifier ignored since 'D' is the default
+ AC_SUBST(AR_FLAGS, [cr])
+ 
++AC_USE_SYSTEM_EXTENSIONS
++
+ dnl This defines _ALL_SOURCE for AIX
+ CURL_CHECK_AIX_ALL_SOURCE
+ 
+diff --git a/lib/connect.c b/lib/connect.c
+index 296fb62..18a9bee 100644
+--- a/lib/connect.c
++++ b/lib/connect.c
+@@ -1598,7 +1598,7 @@ CURLcode Curl_socket(struct Curl_easy *data,
+   }
+   else
+     /* opensocket callback not set, so simply create the socket now */
+-    *sockfd = socket(addr->family, addr->socktype, addr->protocol);
++    *sockfd = socket(addr->family, addr->socktype | SOCK_CLOEXEC, addr->protocol);
+ 
+   if(*sockfd == CURL_SOCKET_BAD)
+     /* no socket, no connection */
+diff --git a/lib/file.c b/lib/file.c
+index dd8a1fd..5d6cabd 100644
+--- a/lib/file.c
++++ b/lib/file.c
+@@ -194,7 +194,7 @@ static CURLcode file_connect(struct Curl_easy *data, bool *done)
+     return CURLE_URL_MALFORMAT;
+   }
+ 
+-  fd = open_readonly(actual_path, O_RDONLY|O_BINARY);
++  fd = open_readonly(actual_path, O_RDONLY|O_BINARY|O_CLOEXEC);
+   file->path = actual_path;
+ #endif
+   file->freepath = real_path; /* free this when done */
+@@ -278,7 +278,7 @@ static CURLcode file_upload(struct Curl_easy *data)
+   else
+     mode = MODE_DEFAULT|O_TRUNC;
+ 
+-  fd = open(file->path, mode, data->set.new_file_perms);
++  fd = open(file->path, mode | O_CLOEXEC, data->set.new_file_perms);
+   if(fd < 0) {
+     failf(data, "Can't open %s for writing", file->path);
+     return CURLE_WRITE_ERROR;
+diff --git a/lib/hostip.c b/lib/hostip.c
+index 117caa2..a451d81 100644
+--- a/lib/hostip.c
++++ b/lib/hostip.c
+@@ -49,7 +49,7 @@
+ #ifdef HAVE_PROCESS_H
+ #include <process.h>
+ #endif
+-
++#include <fcntl.h>
+ #include "urldata.h"
+ #include "sendf.h"
+ #include "hostip.h"
+@@ -549,7 +549,7 @@ bool Curl_ipv6works(struct Curl_easy *data)
+   else {
+     int ipv6_works = -1;
+     /* probe to see if we have a working IPv6 stack */
+-    curl_socket_t s = socket(PF_INET6, SOCK_DGRAM, 0);
++    curl_socket_t s = socket(PF_INET6, SOCK_DGRAM | SOCK_CLOEXEC, 0);
+     if(s == CURL_SOCKET_BAD)
+       /* an IPv6 address was requested but we can't get/use one */
+       ipv6_works = 0;
+diff --git a/lib/if2ip.c b/lib/if2ip.c
+index 21e00b1..14020bc 100644
+--- a/lib/if2ip.c
++++ b/lib/if2ip.c
+@@ -202,7 +202,7 @@ if2ip_result_t Curl_if2ip(int af, unsigned int remote_scope,
+   if(len >= sizeof(req.ifr_name))
+     return IF2IP_NOT_FOUND;
+ 
+-  dummy = socket(AF_INET, SOCK_STREAM, 0);
++  dummy = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+   if(CURL_SOCKET_BAD == dummy)
+     return IF2IP_NOT_FOUND;
+ 

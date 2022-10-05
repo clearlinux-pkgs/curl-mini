@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Arzhan Kinzhalin <arzhan.i.kinzhalin@intel.com>
+Date: Mon, 4 Sep 2017 20:21:15 +0000
+Subject: [PATCH] Remove use of DES.
+
+Signed-off-by: Arzhan Kinzhalin <arzhan.i.kinzhalin@intel.com>
+---
+ configure.ac     | 2 +-
+ lib/curl_setup.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 152b047..d440554 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -4066,7 +4066,7 @@ if test "x$CURL_DISABLE_CRYPTO_AUTH" != "x1" -a \
+ 
+   if test "x$use_curl_ntlm_core" = "xyes" \
+       -o "x$USE_WINDOWS_SSPI" = "x1"; then
+-    SUPPORT_FEATURES="$SUPPORT_FEATURES NTLM"
++    SUPPORT_FEATURES="$SUPPORT_FEATURES"
+ 
+     if test "x$CURL_DISABLE_HTTP" != "x1" -a \
+         "x$NTLM_WB_ENABLED" = "x1"; then
+diff --git a/lib/curl_setup.h b/lib/curl_setup.h
+index 99048c4..2ef8807 100644
+--- a/lib/curl_setup.h
++++ b/lib/curl_setup.h
+@@ -664,7 +664,7 @@ int netware_init(void);
+       defined(USE_GNUTLS) || defined(USE_NSS) || defined(USE_SECTRANSP) ||  \
+       defined(USE_OS400CRYPTO) || defined(USE_WIN32_CRYPTO) ||              \
+       (defined(USE_WOLFSSL) && defined(HAVE_WOLFSSL_DES_ECB_ENCRYPT))
+-#    define USE_CURL_NTLM_CORE
++#    undef USE_CURL_NTLM_CORE
+ #  endif
+ #  if defined(USE_CURL_NTLM_CORE) || defined(USE_WINDOWS_SSPI)
+ #    define USE_NTLM

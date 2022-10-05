@@ -1,0 +1,12 @@
+# This file contains additional build requirements that did not get
+# picked up automatically. One name per line, no whitespace.
+ca-certs
+dbus-dev
+e2fsprogs-dev
+glibc-dev
+glibc-staticdev
+groff
+libc6
+libidn-dev
+openssl-dev
+pkg-config
