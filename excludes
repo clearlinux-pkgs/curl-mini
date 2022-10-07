@@ -2,3 +2,20 @@
 # This file contains the output files that need %exclude.
 # Full path names, one per line.
 #
+/usr/share/man/man3/*
+/usr/include/curl/curl.h
+/usr/include/curl/curlver.h
+/usr/include/curl/easy.h
+/usr/include/curl/header.h
+/usr/include/curl/mprintf.h
+/usr/include/curl/multi.h
+/usr/include/curl/options.h
+/usr/include/curl/stdcheaders.h
+/usr/include/curl/system.h
+/usr/include/curl/typecheck-gcc.h
+/usr/include/curl/urlapi.h
+/usr/lib64/libcurlmini.so
+/usr/lib64/pkgconfig/libcurl.pc
+/usr/share/aclocal/*.m4
+/usr/bin/curl
+/usr/bin/curl-config
