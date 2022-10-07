@@ -3,6 +3,7 @@
 # Full path names, one per line.
 #
 /usr/share/man/man3/*
+/usr/share/man/man1/*
 /usr/include/curl/curl.h
 /usr/include/curl/curlver.h
 /usr/include/curl/easy.h
@@ -14,7 +15,6 @@
 /usr/include/curl/system.h
 /usr/include/curl/typecheck-gcc.h
 /usr/include/curl/urlapi.h
-/usr/lib64/libcurlmini.so
 /usr/lib64/pkgconfig/libcurl.pc
 /usr/share/aclocal/*.m4
 /usr/bin/curl

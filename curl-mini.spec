@@ -6,7 +6,7 @@
 #
 Name     : curl-mini
 Version  : 7.85.0
-Release  : 132
+Release  : 133
 URL      : https://github.com/curl/curl/releases/download/curl-7_85_0/curl-7.85.0.tar.xz
 Source0  : https://github.com/curl/curl/releases/download/curl-7_85_0/curl-7.85.0.tar.xz
 Source1  : https://github.com/curl/curl/releases/download/curl-7_85_0/curl-7.85.0.tar.xz.asc
@@ -15,7 +15,6 @@ Group    : Development/Tools
 License  : MIT
 Requires: curl-mini-lib = %{version}-%{release}
 Requires: curl-mini-license = %{version}-%{release}
-Requires: curl-mini-man = %{version}-%{release}
 Requires: ca-certs
 BuildRequires : automake
 BuildRequires : automake-dev
@@ -47,6 +46,17 @@ cars, television sets, routers, printers, audio equipment, mobile phones,
 tablets, settop boxes, media players and is the internet transfer backbone for
 thousands of software applications affecting billions of humans daily.
 
+%package dev
+Summary: dev components for the curl-mini package.
+Group: Development
+Requires: curl-mini-lib = %{version}-%{release}
+Provides: curl-mini-devel = %{version}-%{release}
+Requires: curl-mini = %{version}-%{release}
+
+%description dev
+dev components for the curl-mini package.
+
+
 %package lib
 Summary: lib components for the curl-mini package.
 Group: Libraries
@@ -64,14 +74,6 @@ Group: Default
 license components for the curl-mini package.
 
 
-%package man
-Summary: man components for the curl-mini package.
-Group: Default
-
-%description man
-man components for the curl-mini package.
-
-
 %prep
 %setup -q -n curl-7.85.0
 cd %{_builddir}/curl-7.85.0
@@ -85,7 +87,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1665153182
+export SOURCE_DATE_EPOCH=1665153459
 export GCC_IGNORE_WERROR=1
 export CFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-lto -fno-semantic-interposition "
 export FCFLAGS="$FFLAGS -Os -fdata-sections -ffunction-sections -fno-lto -fno-semantic-interposition "
@@ -118,13 +120,14 @@ export CXXFLAGS="$CXXFLAGS -Os -fdata-sections -ffunction-sections -fno-lto -fno
 make  %{?_smp_mflags}
 
 %install
-export SOURCE_DATE_EPOCH=1665153182
+export SOURCE_DATE_EPOCH=1665153459
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/curl-mini
 cp %{_builddir}/curl-%{version}/COPYING %{buildroot}/usr/share/package-licenses/curl-mini/a1b6d897dd52289ab03cb1350b152e68f44bc130 || :
 %make_install
 ## Remove excluded files
 rm -f %{buildroot}*/usr/share/man/man3/*
+rm -f %{buildroot}*/usr/share/man/man1/*
 rm -f %{buildroot}*/usr/include/curl/curl.h
 rm -f %{buildroot}*/usr/include/curl/curlver.h
 rm -f %{buildroot}*/usr/include/curl/easy.h
@@ -136,7 +139,6 @@ rm -f %{buildroot}*/usr/include/curl/stdcheaders.h
 rm -f %{buildroot}*/usr/include/curl/system.h
 rm -f %{buildroot}*/usr/include/curl/typecheck-gcc.h
 rm -f %{buildroot}*/usr/include/curl/urlapi.h
-rm -f %{buildroot}*/usr/lib64/libcurlmini.so
 rm -f %{buildroot}*/usr/lib64/pkgconfig/libcurl.pc
 rm -f %{buildroot}*/usr/share/aclocal/*.m4
 rm -f %{buildroot}*/usr/bin/curl
@@ -144,6 +146,10 @@ rm -f %{buildroot}*/usr/bin/curl-config
 
 %files
 %defattr(-,root,root,-)
+
+%files dev
+%defattr(-,root,root,-)
+/usr/lib64/libcurlmini.so
 
 %files lib
 %defattr(-,root,root,-)
@@ -153,8 +159,3 @@ rm -f %{buildroot}*/usr/bin/curl-config
 %files license
 %defattr(0644,root,root,0755)
 /usr/share/package-licenses/curl-mini/a1b6d897dd52289ab03cb1350b152e68f44bc130
-
-%files man
-%defattr(0644,root,root,0755)
-/usr/share/man/man1/curl-config.1
-/usr/share/man/man1/curl.1
