@@ -4,3 +4,4 @@
 0004-Avoid-stripping-the-g-option.patch
 0005-Open-library-file-descriptors-with-O_CLOEXEC.patch
 #libproxy.patch
+libcurlmini.patch

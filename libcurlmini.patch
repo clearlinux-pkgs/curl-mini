@@ -1,0 +1,96 @@
+--- curl-7.85.0/lib/Makefile.am~	2022-08-13 16:50:57.000000000 +0000
++++ curl-7.85.0/lib/Makefile.am	2022-10-07 14:17:40.005949021 +0000
+@@ -30,7 +30,7 @@
+  libcurl.plist libcurl.rc config-amigaos.h makefile.amiga config-win32ce.h \
+  config-os400.h setup-os400.h $(CMAKE_DIST) setup-win32.h .checksrc
+ 
+-lib_LTLIBRARIES = libcurl.la
++lib_LTLIBRARIES = libcurlmini.la
+ 
+ if BUILD_UNITTESTS
+ noinst_LTLIBRARIES = libcurlu.la
+@@ -75,52 +75,52 @@
+ AM_LDFLAGS =
+ AM_CFLAGS =
+ 
+-libcurl_la_CPPFLAGS_EXTRA =
+-libcurl_la_LDFLAGS_EXTRA =
+-libcurl_la_CFLAGS_EXTRA =
++libcurlmini_la_CPPFLAGS_EXTRA =
++libcurlmini_la_LDFLAGS_EXTRA =
++libcurlmini_la_CFLAGS_EXTRA =
+ 
+ if CURL_LT_SHLIB_USE_VERSION_INFO
+-libcurl_la_LDFLAGS_EXTRA += $(VERSIONINFO)
++libcurlmini_la_LDFLAGS_EXTRA += $(VERSIONINFO)
+ endif
+ 
+ if CURL_LT_SHLIB_USE_NO_UNDEFINED
+-libcurl_la_LDFLAGS_EXTRA += -no-undefined
++libcurlmini_la_LDFLAGS_EXTRA += -no-undefined
+ endif
+ 
+ if CURL_LT_SHLIB_USE_MIMPURE_TEXT
+-libcurl_la_LDFLAGS_EXTRA += -mimpure-text
++libcurlmini_la_LDFLAGS_EXTRA += -mimpure-text
+ endif
+ 
+ if CURL_LT_SHLIB_USE_VERSIONED_SYMBOLS
+-libcurl_la_LDFLAGS_EXTRA += -Wl,--version-script=libcurl.vers
++libcurlmini_la_LDFLAGS_EXTRA += -Wl,--version-script=libcurl.vers
+ else
+ # if symbol-hiding is enabled, hide them!
+ if DOING_CURL_SYMBOL_HIDING
+-libcurl_la_LDFLAGS_EXTRA += -export-symbols-regex '^curl_.*'
++libcurlmini_la_LDFLAGS_EXTRA += -export-symbols-regex '^curl_.*'
+ endif
+ endif
+ 
+ if USE_CPPFLAG_CURL_STATICLIB
+-libcurl_la_CPPFLAGS_EXTRA += -DCURL_STATICLIB
++libcurlmini_la_CPPFLAGS_EXTRA += -DCURL_STATICLIB
+ endif
+ 
+ if DOING_CURL_SYMBOL_HIDING
+-libcurl_la_CPPFLAGS_EXTRA += -DCURL_HIDDEN_SYMBOLS
+-libcurl_la_CFLAGS_EXTRA += $(CFLAG_CURL_SYMBOL_HIDING)
++libcurlmini_la_CPPFLAGS_EXTRA += -DCURL_HIDDEN_SYMBOLS
++libcurlmini_la_CFLAGS_EXTRA += $(CFLAG_CURL_SYMBOL_HIDING)
+ endif
+ 
+-libcurl_la_CPPFLAGS = $(AM_CPPFLAGS) $(libcurl_la_CPPFLAGS_EXTRA)
+-libcurl_la_LDFLAGS = $(AM_LDFLAGS) $(libcurl_la_LDFLAGS_EXTRA) $(LDFLAGS) $(LIBCURL_LIBS)
+-libcurl_la_CFLAGS = $(AM_CFLAGS) $(libcurl_la_CFLAGS_EXTRA)
++libcurlmini_la_CPPFLAGS = $(AM_CPPFLAGS) $(libcurlmini_la_CPPFLAGS_EXTRA)
++libcurlmini_la_LDFLAGS = $(AM_LDFLAGS) $(libcurlmini_la_LDFLAGS_EXTRA) $(LDFLAGS) $(LIBCURL_LIBS)
++libcurlmini_la_CFLAGS = $(AM_CFLAGS) $(libcurlmini_la_CFLAGS_EXTRA)
+ 
+-libcurlu_la_CPPFLAGS = $(AM_CPPFLAGS) -DCURL_STATICLIB -DUNITTESTS
+-libcurlu_la_LDFLAGS = $(AM_LDFLAGS) -static $(LIBCURL_LIBS)
+-libcurlu_la_CFLAGS = $(AM_CFLAGS)
++libcurlminiu_la_CPPFLAGS = $(AM_CPPFLAGS) -DCURL_STATICLIB -DUNITTESTS
++libcurlminiu_la_LDFLAGS = $(AM_LDFLAGS) -static $(LIBCURL_LIBS)
++libcurlminiu_la_CFLAGS = $(AM_CFLAGS)
+ 
+ # Makefile.inc provides the CSOURCES and HHEADERS defines
+ include Makefile.inc
+ 
+-libcurl_la_SOURCES = $(CSOURCES) $(HHEADERS)
++libcurlmini_la_SOURCES = $(CSOURCES) $(HHEADERS)
+ libcurlu_la_SOURCES = $(CSOURCES) $(HHEADERS)
+ 
+ CHECKSRC = $(CS_$(V))
+--- curl-7.85.0/src/Makefile.am~	2022-08-30 11:24:16.000000000 +0000
++++ curl-7.85.0/src/Makefile.am	2022-10-07 14:23:06.138741548 +0000
+@@ -63,9 +63,9 @@
+ LIBS = $(BLANK_AT_MAKETIME)
+ 
+ if USE_EXPLICIT_LIB_DEPS
+-curl_LDADD = $(top_builddir)/lib/libcurl.la @LIBCURL_LIBS@
++curl_LDADD = $(top_builddir)/lib/libcurlmini.la @LIBCURL_LIBS@
+ else
+-curl_LDADD = $(top_builddir)/lib/libcurl.la @NSS_LIBS@ @SSL_LIBS@ @ZLIB_LIBS@ @CURL_NETWORK_AND_TIME_LIBS@
++curl_LDADD = $(top_builddir)/lib/libcurlmini.la @NSS_LIBS@ @SSL_LIBS@ @ZLIB_LIBS@ @CURL_NETWORK_AND_TIME_LIBS@
+ endif
+ 
+ # if unit tests are enabled, build a static library to link them with

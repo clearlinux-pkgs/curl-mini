@@ -6,7 +6,7 @@
 #
 Name     : curl-mini
 Version  : 7.85.0
-Release  : 130
+Release  : 131
 URL      : https://github.com/curl/curl/releases/download/curl-7_85_0/curl-7.85.0.tar.xz
 Source0  : https://github.com/curl/curl/releases/download/curl-7_85_0/curl-7.85.0.tar.xz
 Source1  : https://github.com/curl/curl/releases/download/curl-7_85_0/curl-7.85.0.tar.xz.asc
@@ -40,6 +40,7 @@ BuildRequires : zstd-dev
 Patch1: 0001-Remove-use-of-DES.patch
 Patch2: 0004-Avoid-stripping-the-g-option.patch
 Patch3: 0005-Open-library-file-descriptors-with-O_CLOEXEC.patch
+Patch4: libcurlmini.patch
 
 %description
 curl is used in command lines or scripts to transfer data. It is also used in
@@ -99,13 +100,14 @@ cd %{_builddir}/curl-7.85.0
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1665010037
+export SOURCE_DATE_EPOCH=1665152683
 export GCC_IGNORE_WERROR=1
 export CFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-lto -fno-semantic-interposition "
 export FCFLAGS="$FFLAGS -Os -fdata-sections -ffunction-sections -fno-lto -fno-semantic-interposition "
@@ -138,7 +140,7 @@ export CXXFLAGS="$CXXFLAGS -Os -fdata-sections -ffunction-sections -fno-lto -fno
 make  %{?_smp_mflags}
 
 %install
-export SOURCE_DATE_EPOCH=1665010037
+export SOURCE_DATE_EPOCH=1665152683
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/curl-mini
 cp %{_builddir}/curl-%{version}/COPYING %{buildroot}/usr/share/package-licenses/curl-mini/a1b6d897dd52289ab03cb1350b152e68f44bc130 || :
@@ -165,7 +167,7 @@ cp %{_builddir}/curl-%{version}/COPYING %{buildroot}/usr/share/package-licenses/
 /usr/include/curl/system.h
 /usr/include/curl/typecheck-gcc.h
 /usr/include/curl/urlapi.h
-/usr/lib64/libcurl.so
+/usr/lib64/libcurlmini.so
 /usr/lib64/pkgconfig/libcurl.pc
 /usr/share/aclocal/*.m4
 /usr/share/man/man3/CURLINFO_ACTIVESOCKET.3
@@ -647,8 +649,8 @@ cp %{_builddir}/curl-%{version}/COPYING %{buildroot}/usr/share/package-licenses/
 
 %files lib
 %defattr(-,root,root,-)
-/usr/lib64/libcurl.so.4
-/usr/lib64/libcurl.so.4.8.0
+/usr/lib64/libcurlmini.so.4
+/usr/lib64/libcurlmini.so.4.8.0
 
 %files license
 %defattr(0644,root,root,0755)
